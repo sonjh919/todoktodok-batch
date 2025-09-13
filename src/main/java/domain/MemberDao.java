@@ -1,10 +1,11 @@
 package domain;
 
-import database.ConnectMysql;
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import database.ConnectMysql;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +19,7 @@ public class MemberDao {
     }
 
     public void addMemberBatchMultiThread(int totalCount, int threadCount) {
-        System.out.println("Batch Start");
+        System.out.println("Member Batch Start (Multi Thread)");
         long methodStart = System.currentTimeMillis();
 
         int chunkSize = totalCount / threadCount;
@@ -56,12 +57,13 @@ public class MemberDao {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
+
             });
         }
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
-            System.out.println("Batch End");
+            System.out.println("Member Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -71,8 +73,51 @@ public class MemberDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds");
     }
 
+    public void addMemberBatch(int totalCount) {
+        System.out.println("Member Batch Start (Single Thread)");
+        long methodStart = System.currentTimeMillis();
+
+        final var query =
+                """
+                INSERT INTO MEMBER (email, nickname, profile_image, profile_message, created_at, modified_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """;
+
+        try (Connection connection = connectMysql.create();
+             final var preparedStatement = connection.prepareStatement(query)) {
+
+            connection.setAutoCommit(false);
+
+            String time = String.valueOf(LocalDateTime.now());
+            for (int i = 0; i < totalCount; i++) {
+                String temp = String.format("test%d",i);
+                preparedStatement.setString(1, String.format("%s@test.com", temp));
+                preparedStatement.setString(2, temp);
+                preparedStatement.setString(3, temp);
+                preparedStatement.setString(4, temp);
+                preparedStatement.setString(5, time);
+                preparedStatement.setString(6, time);
+                preparedStatement.addBatch();
+
+                if (i % 1000 == 0 && i != 0) {
+                    preparedStatement.executeBatch();
+                    preparedStatement.clearBatch();
+                }
+            }
+
+            preparedStatement.executeUpdate();
+            connection.commit();
+
+            connectMysql.close(connection);
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Member Batch End (Single Thread)");
+    }
+
     public void deleteAllMembers() {
-        System.out.println("Delete Start");
+        System.out.println("Member Delete Start");
         long methodStart = System.currentTimeMillis();
 
         final String query = "DELETE FROM MEMBER";
@@ -86,7 +131,7 @@ public class MemberDao {
 
             connection.commit();
             connectMysql.close(connection);
-            System.out.println("Delete End");
+            System.out.println("Member Delete End");
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
@@ -95,6 +140,4 @@ public class MemberDao {
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds");
     }
-
-
 }
