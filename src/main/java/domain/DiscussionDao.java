@@ -75,7 +75,7 @@ public class DiscussionDao {
 
         long methodEnd = System.currentTimeMillis();
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
-        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds");
+        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
     public void addDiscussionBatch(int totalCount, final int memberCount, final int bookCount) {
@@ -126,7 +126,7 @@ public class DiscussionDao {
         System.out.println("Discussion Batch End (Single Thread)");
         long methodEnd = System.currentTimeMillis();
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
-        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds");
+        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
     public void deleteAllDiscussions() {
@@ -151,6 +151,6 @@ public class DiscussionDao {
 
         long methodEnd = System.currentTimeMillis();
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
-        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds");
+        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 }

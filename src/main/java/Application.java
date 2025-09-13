@@ -1,7 +1,8 @@
+import database.ConnectMysql;
 import domain.BookDao;
+import domain.CommentDao;
 import domain.DiscussionDao;
 import domain.MemberDao;
-import database.ConnectMysql;
 
 public class Application {
     public static void main(String[] args) {
@@ -9,13 +10,13 @@ public class Application {
         ConnectMysql connectMysql = new ConnectMysql();
 
         int cores = Runtime.getRuntime().availableProcessors();
-        int threads = cores*2;
+        int threads = cores * 2;
         System.out.println("CPU cores: " + cores);
 
         int memberCount = 1000;
         int bookCount = 100;
         int discussionCount = 1000000;
-        int commentCount = 1000000;
+        int commentCount = 10000000;
         int replyCount = 1000000;
 
         // Member
@@ -34,9 +35,13 @@ public class Application {
         DiscussionDao discussionDao = new DiscussionDao(connectMysql);
 //        discussionDao.deleteAllDiscussions();
 //        discussionDao.addDiscussionBatch(discussionCount, memberCount, bookCount);
-        discussionDao.addDiscussionBatchMultiThread(discussionCount,threads, memberCount, bookCount);
+        discussionDao.addDiscussionBatchMultiThread(discussionCount, threads, memberCount, bookCount);
 
         // Comment
+        CommentDao commentDao = new CommentDao(connectMysql);
+//        commentDao.deleteAllComments();
+//        commentDao.addCommentBatch(commentCount, memberCount, discussionCount);
+        commentDao.addCommentBatchMultiThread(commentCount, threads, memberCount, discussionCount);
 
         // Reply
     }
