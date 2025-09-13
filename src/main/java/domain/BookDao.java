@@ -75,7 +75,7 @@ public class BookDao {
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
-            System.out.println("Book Batch End (Multi Thread)");
+            System.out.println("Book Batch End (Multi Thread)\n");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -136,7 +136,7 @@ public class BookDao {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Book Batch End (Single Thread)");
+        System.out.println("Book Batch End (Single Thread)\n");
         long methodEnd = System.currentTimeMillis();
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds");
@@ -157,7 +157,7 @@ public class BookDao {
 
             connection.commit();
             connectMysql.close(connection);
-            System.out.println("Book Delete End");
+            System.out.println("Book Delete End\n");
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }

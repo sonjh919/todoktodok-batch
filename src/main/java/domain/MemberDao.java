@@ -63,7 +63,7 @@ public class MemberDao {
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
-            System.out.println("Member Batch End (Multi Thread)");
+            System.out.println("Member Batch End (Multi Thread)\n");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -89,6 +89,7 @@ public class MemberDao {
             connection.setAutoCommit(false);
 
             String time = String.valueOf(LocalDateTime.now());
+
             for (int i = 0; i < totalCount; i++) {
                 String temp = String.format("test%d",i);
                 preparedStatement.setString(1, String.format("%s@test.com", temp));
@@ -105,7 +106,7 @@ public class MemberDao {
                 }
             }
 
-            preparedStatement.executeUpdate();
+            preparedStatement.executeBatch();
             connection.commit();
 
             connectMysql.close(connection);
@@ -113,7 +114,7 @@ public class MemberDao {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Member Batch End (Single Thread)");
+        System.out.println("Member Batch End (Single Thread)\n");
         long methodEnd = System.currentTimeMillis();
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds");
@@ -134,7 +135,7 @@ public class MemberDao {
 
             connection.commit();
             connectMysql.close(connection);
-            System.out.println("Member Delete End");
+            System.out.println("Member Delete End\n");
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
