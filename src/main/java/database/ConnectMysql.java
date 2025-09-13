@@ -8,8 +8,8 @@ public class ConnectMysql {
     private static final String SERVER = "localhost:3306"; // MySQL 서버 주소
     private static final String DATABASE = "todoktodok_test"; // MySQL DATABASE 이름
     private static final String OPTION = "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String USERNAME = "root"; //  MySQL 서버 아이디
-    private static final String PASSWORD = "kansiro0314"; // MySQL 서버 비밀번호
+    private static final String USERNAME = ""; //  MySQL 서버 아이디
+    private static final String PASSWORD = ""; // MySQL 서버 비밀번호
 
     public Connection create() {
         try {
