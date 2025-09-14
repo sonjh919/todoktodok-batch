@@ -51,7 +51,7 @@ public class Setting {
     public static int REPLY_REPORT_COUNT = ONE_MILLION; // 최댓값: MEMBER_COUNT * REPLY_COUNT (정책상, 본인이 쓴 글 고려 x)
 
     /**
-     * 현재 테이블에 있는 데이터 수!! 값을 골고루 넣어주기 위함.
+     * 현재 테이블에 있는 데이터 수!! 값을 골고루 넣어주기 위함 + 제대로 안적으면 에러남!! 까먹지 막고 꼭 쓰기!!
      * SELECT count(*) FROM MEMBER;
      * SELECT count(*) FROM BOOK;
      * SELECT count(*) FROM DISCUSSION;
