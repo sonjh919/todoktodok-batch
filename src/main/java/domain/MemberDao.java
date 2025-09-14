@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import database.ConnectMysql;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +51,7 @@ public class MemberDao {
 
                     for (int i = start; i < end; i++) {
                         String temp = String.format("test%d", i);
-                        ps.setString(1, String.format("%s@test.com", temp));
+                        ps.setString(1, String.format("%s@test.com", UUID.randomUUID()));
                         ps.setString(2, temp);
                         ps.setString(3, temp);
                         ps.setString(4, temp);
@@ -74,6 +75,7 @@ public class MemberDao {
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
+            executor.shutdownNow();
             System.out.println("Member Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -103,7 +105,7 @@ public class MemberDao {
 
             for (int i = 0; i < totalCount; i++) {
                 String temp = String.format("test%d",i);
-                preparedStatement.setString(1, String.format("%s@test.com", temp));
+                preparedStatement.setString(1, String.format("%s@test.com", UUID.randomUUID()));
                 preparedStatement.setString(2, temp);
                 preparedStatement.setString(3, temp);
                 preparedStatement.setString(4, temp);

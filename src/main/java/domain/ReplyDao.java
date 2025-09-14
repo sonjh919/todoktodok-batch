@@ -78,6 +78,7 @@ public class ReplyDao {
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
+            executor.shutdownNow();
             System.out.println("Reply Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

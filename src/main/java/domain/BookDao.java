@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -51,9 +52,7 @@ public class BookDao {
                     String time = String.valueOf(LocalDateTime.now());
 
                     for (int i = start; i < end; i++) {
-                        // 고유 isbn 생성 (예: "9780000000000" 형태)
-                        String isbn = String.format("978%010d", i);
-
+                        String isbn = UUID.randomUUID().toString().substring(0,13);
                         String author = "author" + i;
                         String image = "image" + i;
                         String publisher = "publisher" + i;
@@ -86,6 +85,7 @@ public class BookDao {
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
+            executor.shutdownNow();
             System.out.println("Book Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -97,7 +97,7 @@ public class BookDao {
     }
 
     private void addBatchSingleThread(int totalCount) {
-        System.out.println("Member Batch Start (Single Thread)");
+        System.out.println("Book Batch Start (Single Thread)");
         long methodStart = System.currentTimeMillis();
 
         final var query =
@@ -114,8 +114,7 @@ public class BookDao {
             String time = String.valueOf(LocalDateTime.now());
 
             for (int i = 0; i < totalCount; i++) {
-                // 고유 isbn 생성 (예: "9780000000000" 형태)
-                String isbn = String.format("978%010d", i);
+                String isbn = UUID.randomUUID().toString().substring(0,13);
                 String author = "author" + i;
                 String image = "image" + i;
                 String publisher = "publisher" + i;

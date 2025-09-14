@@ -78,6 +78,7 @@ public class CommentDao {
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
+            executor.shutdownNow();
             System.out.println("Comment Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

@@ -79,6 +79,7 @@ public class DiscussionDao {
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
+            executor.shutdownNow();
             System.out.println("Discussion Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
