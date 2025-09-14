@@ -1,10 +1,10 @@
 package database;
 
-import static domain.Setting.DATABASE;
-import static domain.Setting.OPTION;
-import static domain.Setting.PASSWORD;
-import static domain.Setting.SERVER;
-import static domain.Setting.USERNAME;
+import static setting.Setting.DATABASE;
+import static setting.Setting.OPTION;
+import static setting.Setting.PASSWORD;
+import static setting.Setting.SERVER;
+import static setting.Setting.USERNAME;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

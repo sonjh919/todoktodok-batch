@@ -1,6 +1,6 @@
-package domain;
+package domain.member;
 
-import static domain.Setting.THRESHOLD;
+import static setting.Setting.THRESHOLD;
 
 import database.ConnectMysql;
 import java.sql.Connection;
@@ -11,26 +11,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class DiscussionDao {
+public class BlockDao {
 
     private final ConnectMysql connectMysql;
 
-    public DiscussionDao(final ConnectMysql connectMysql) {
+    public BlockDao(final ConnectMysql connectMysql) {
         this.connectMysql = connectMysql;
     }
 
-    public void addBatch(final int totalCount, final int threads, final int memberCount, final int bookCount) {
-        if(totalCount <= THRESHOLD){
-            addBatchSingleThread(totalCount, memberCount, bookCount);
-        }
-        else{
-            addBatchMultiThread(totalCount, threads, memberCount, bookCount);
+    public void addBatch(final int totalCount, final int threads, final int memberCount) {
+        if (totalCount <= THRESHOLD) {
+            addBatchSingleThread(totalCount, memberCount);
+        } else {
+            addBatchMultiThread(totalCount, threads, memberCount);
         }
     }
 
-    private void addBatchMultiThread(int totalCount, int threadCount, final int memberCount,
-                                    final int bookCount) {
-        System.out.println("Discussion Batch Start (Multi Thread)");
+    private void addBatchMultiThread(int totalCount, int threadCount, final int memberCount) {
+        System.out.println("Block Batch Start (Multi Thread)");
         long methodStart = System.currentTimeMillis();
 
         int chunkSize = totalCount / threadCount;
@@ -43,24 +41,19 @@ public class DiscussionDao {
             executor.submit(() -> {
                 try (Connection connection = connectMysql.create();
                      PreparedStatement ps = connection.prepareStatement(
-                             "INSERT INTO discussion (created_at, modified_at, deleted_at, member_id, book_id, title, content) VALUES (?, ?, NULL, ?, ?, ?, ?)")) {
+                             "INSERT INTO block (created_at, modified_at, deleted_at, member_id, target_id) VALUES (?, ?, NULL, ?, ?)")) {
 
                     connection.setAutoCommit(false);
                     String time = String.valueOf(LocalDateTime.now());
 
                     for (int i = start; i < end; i++) {
-                        // 예시용 member_id, book_id 생성 (실제 환경에 맞게 조정)
-                        long memberId = (i % memberCount) + 1; // 1~count 반복
-                        long bookId = (i % bookCount) + 1;    // 1~count 반복
-                        String title = "Discussion Title " + i;
-                        String content = "Discussion Content " + i;
+                        long memberId = (i % memberCount) + 1;
+                        long targetId = ((i + 1) % memberCount) + 1; // different from memberId
 
                         ps.setString(1, time);
                         ps.setString(2, time);
                         ps.setLong(3, memberId);
-                        ps.setLong(4, bookId);
-                        ps.setString(5, title);
-                        ps.setString(6, content);
+                        ps.setLong(4, targetId);
                         ps.addBatch();
 
                         if ((i - start + 1) % 1000 == 0) {
@@ -80,45 +73,39 @@ public class DiscussionDao {
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
             executor.shutdownNow();
-            System.out.println("Discussion Batch End (Multi Thread)");
+            System.out.println("Block Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
         long methodEnd = System.currentTimeMillis();
-        long elapsedSeconds = (methodEnd - methodStart) / 1000;
-        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
+        System.out.println("Total method elapsed time: " + (methodEnd - methodStart) / 1000 + " seconds\n");
     }
 
-    private void addBatchSingleThread(int totalCount, final int memberCount, final int bookCount) {
-        System.out.println("Discussion Batch Start (Single Thread)");
+    private void addBatchSingleThread(int totalCount, final int memberCount) {
+        System.out.println("Block Batch Start (Single Thread)");
         long methodStart = System.currentTimeMillis();
 
         final var query =
                 """
-                INSERT INTO discussion (created_at, modified_at, deleted_at, member_id, book_id, title, content)
-                VALUES (?, ?, NULL, ?, ?, ?, ?)
+                INSERT INTO block (created_at, modified_at, deleted_at, member_id, target_id)
+                VALUES (?, ?, NULL, ?, ?)
                 """;
 
         try (Connection connection = connectMysql.create();
              final var preparedStatement = connection.prepareStatement(query)) {
 
             connection.setAutoCommit(false);
-
             String time = String.valueOf(LocalDateTime.now());
 
             for (int i = 0; i < totalCount; i++) {
                 long memberId = (i % memberCount) + 1;
-                long bookId = (i % bookCount) + 1;
-                String title = "Discussion Title " + i;
-                String content = "Discussion Content " + i;
+                long targetId = ((i + 1) % memberCount) + 1; // different from memberId
 
                 preparedStatement.setString(1, time);
                 preparedStatement.setString(2, time);
                 preparedStatement.setLong(3, memberId);
-                preparedStatement.setLong(4, bookId);
-                preparedStatement.setString(5, title);
-                preparedStatement.setString(6, content);
+                preparedStatement.setLong(4, targetId);
                 preparedStatement.addBatch();
 
                 if (i % 1000 == 0 && i != 0) {
@@ -126,7 +113,6 @@ public class DiscussionDao {
                     preparedStatement.clearBatch();
                 }
             }
-
             preparedStatement.executeBatch();
             connection.commit();
 
@@ -135,18 +121,17 @@ public class DiscussionDao {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Discussion Batch End (Single Thread)");
+        System.out.println("Block Batch End (Single Thread)");
         long methodEnd = System.currentTimeMillis();
-        long elapsedSeconds = (methodEnd - methodStart) / 1000;
-        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
+        System.out.println("Total method elapsed time: " + (methodEnd - methodStart) / 1000 + " seconds\n");
     }
 
     public void deleteAll() {
-        System.out.println("Discussion Delete Start");
+        System.out.println("Block Delete Start");
         long methodStart = System.currentTimeMillis();
 
         final String disableFkCheck = "SET FOREIGN_KEY_CHECKS = 0";
-        final String truncateQuery = "TRUNCATE TABLE discussion";
+        final String truncateQuery = "TRUNCATE TABLE block";
         final String enableFkCheck = "SET FOREIGN_KEY_CHECKS = 1";
 
         try (Connection connection = connectMysql.create()) {
@@ -160,14 +145,12 @@ public class DiscussionDao {
 
             connection.commit();
             connectMysql.close(connection);
-            System.out.println("Discussion Delete End");
+            System.out.println("Block Delete End");
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 
         long methodEnd = System.currentTimeMillis();
-        long elapsedSeconds = (methodEnd - methodStart) / 1000;
-        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
+        System.out.println("Total method elapsed time: " + (methodEnd - methodStart) / 1000 + " seconds\n");
     }
-
 }

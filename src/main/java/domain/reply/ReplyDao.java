@@ -1,6 +1,6 @@
-package domain;
+package domain.reply;
 
-import static domain.Setting.THRESHOLD;
+import static setting.Setting.THRESHOLD;
 
 import database.ConnectMysql;
 import java.sql.Connection;
