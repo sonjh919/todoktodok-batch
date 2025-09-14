@@ -157,14 +157,18 @@ public class BookDao {
         System.out.println("Book Delete Start");
         long methodStart = System.currentTimeMillis();
 
-        final String query = "DELETE FROM book";
+        final String disableFkCheck = "SET FOREIGN_KEY_CHECKS = 0";
+        final String truncateQuery = "TRUNCATE TABLE book";
+        final String enableFkCheck = "SET FOREIGN_KEY_CHECKS = 1";
 
-        try (Connection connection = connectMysql.create();
-             final var preparedStatement = connection.prepareStatement(query)) {
-
+        try (Connection connection = connectMysql.create()) {
             connection.setAutoCommit(false);
 
-            preparedStatement.executeUpdate();
+            try (var stmt = connection.createStatement()) {
+                stmt.execute(disableFkCheck);
+                stmt.execute(truncateQuery);
+                stmt.execute(enableFkCheck);
+            }
 
             connection.commit();
             connectMysql.close(connection);

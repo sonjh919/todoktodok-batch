@@ -135,14 +135,18 @@ public class MemberDao {
         System.out.println("Member Delete Start");
         long methodStart = System.currentTimeMillis();
 
-        final String query = "DELETE FROM MEMBER";
+        final String disableFkCheck = "SET FOREIGN_KEY_CHECKS = 0";
+        final String truncateQuery = "TRUNCATE TABLE member";
+        final String enableFkCheck = "SET FOREIGN_KEY_CHECKS = 1";
 
-        try (Connection connection = connectMysql.create();
-             final var preparedStatement = connection.prepareStatement(query)) {
-
+        try (Connection connection = connectMysql.create()) {
             connection.setAutoCommit(false);
 
-            preparedStatement.executeUpdate();
+            try (var stmt = connection.createStatement()) {
+                stmt.execute(disableFkCheck);
+                stmt.execute(truncateQuery);
+                stmt.execute(enableFkCheck);
+            }
 
             connection.commit();
             connectMysql.close(connection);

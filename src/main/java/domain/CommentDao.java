@@ -141,14 +141,18 @@ public class CommentDao {
         System.out.println("Comment Delete Start");
         long methodStart = System.currentTimeMillis();
 
-        final String query = "DELETE FROM comment";
+        final String disableFkCheck = "SET FOREIGN_KEY_CHECKS = 0";
+        final String truncateQuery = "TRUNCATE TABLE comment";
+        final String enableFkCheck = "SET FOREIGN_KEY_CHECKS = 1";
 
-        try (Connection connection = connectMysql.create();
-             final var preparedStatement = connection.prepareStatement(query)) {
-
+        try (Connection connection = connectMysql.create()) {
             connection.setAutoCommit(false);
 
-            preparedStatement.executeUpdate();
+            try (var stmt = connection.createStatement()) {
+                stmt.execute(disableFkCheck);
+                stmt.execute(truncateQuery);
+                stmt.execute(enableFkCheck);
+            }
 
             connection.commit();
             connectMysql.close(connection);
@@ -161,4 +165,6 @@ public class CommentDao {
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
+
+
 }
