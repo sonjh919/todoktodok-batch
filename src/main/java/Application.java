@@ -66,10 +66,23 @@ public class Application {
 
         if (DELETE_FLAG) {
             memberDao.deleteAll();
+            blockDao.deleteAll();
+            memberReportDao.deleteAll();
+            refreshTokenDao.deleteAll();
+
             bookDao.deleteAll();
+
             discussionDao.deleteAll();
+            discussionLikeDao.deleteAll();
+            discussionReportDao.deleteAll();
+
             commentDao.deleteAll();
+            commentLikeDao.deleteAll();
+            commentReportDao.deleteAll();
+
             replyDao.deleteAll();
+            replyLikeDao.deleteAll();
+            replyReportDao.deleteAll();
         }
 
         if (ADD_FLAG) {

@@ -38,17 +38,17 @@ public class Setting {
 
     public static int BOOK_COUNT = TEN_THOUSAND;
 
-    public static int DISCUSSION_COUNT = ONE_MILLION;
+    public static int DISCUSSION_COUNT = TEN_THOUSAND;
     public static int DISCUSSION_LIKE_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT (정책상)
-    public static int DISCUSSION_REPORT_COUNT = ONE_MILLION; // 최댓값: MEMBER_COUNT * DISCUSSION_COUNT (정책상, 본인이 쓴 글 고려 x)
+    public static int DISCUSSION_REPORT_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * DISCUSSION_COUNT (정책상, 본인이 쓴 글 고려 x)
 
-    public static int COMMENT_COUNT = ONE_MILLION;
+    public static int COMMENT_COUNT = TEN_THOUSAND;
     public static int COMMENT_LIKE_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT (정책상)
-    public static int COMMENT_REPORT_COUNT = ONE_MILLION; // 최댓값: MEMBER_COUNT * COMMENT_COUNT (정책상, 본인이 쓴 글 고려 x)
+    public static int COMMENT_REPORT_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * COMMENT_COUNT (정책상, 본인이 쓴 글 고려 x)
 
-    public static int REPLY_COUNT = ONE_MILLION;
+    public static int REPLY_COUNT = TEN_THOUSAND;
     public static int REPLY_LIKE_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT (정책상)
-    public static int REPLY_REPORT_COUNT = ONE_MILLION; // 최댓값: MEMBER_COUNT * REPLY_COUNT (정책상, 본인이 쓴 글 고려 x)
+    public static int REPLY_REPORT_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * REPLY_COUNT (정책상, 본인이 쓴 글 고려 x)
 
     /**
      * 현재 테이블에 있는 데이터 수!! 값을 골고루 넣어주기 위함 + 제대로 안적으면 에러남!! 까먹지 막고 꼭 쓰기!!
