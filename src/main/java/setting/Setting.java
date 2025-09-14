@@ -86,7 +86,7 @@ public class Setting {
     public static final String DATABASE = "todoktodok_test"; // MySQL DATABASE 이름
     public static final String OPTION = "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"; // 옵션 (안건드는게좋음)
     public static final String USERNAME = "root"; //  MySQL 서버 아이디
-    public static final String PASSWORD = "kansiro0314"; // MySQL 서버 비밀번호
+    public static final String PASSWORD = "root"; // MySQL 서버 비밀번호
 
     /**
      * 잘 들어갔는지 확인!
