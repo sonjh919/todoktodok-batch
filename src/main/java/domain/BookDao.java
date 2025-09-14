@@ -1,5 +1,7 @@
 package domain;
 
+import static domain.Setting.THRESHOLD;
+
 import database.ConnectMysql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +19,16 @@ public class BookDao {
         this.connectMysql = connectMysql;
     }
 
-    public void addBookBatchMultiThread(int totalCount, int threadCount) {
+    public void addBatch(final int totalCount, final int threads) {
+        if(totalCount <= THRESHOLD){
+            addBatchSingleThread(totalCount);
+        }
+        else{
+            addBatchMultiThread(totalCount, threads);
+        }
+    }
+
+    private void addBatchMultiThread(int totalCount, int threadCount) {
         System.out.println("Book Batch Start (Multi Thread)");
         long methodStart = System.currentTimeMillis();
 
@@ -85,7 +96,7 @@ public class BookDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
-    public void addBookBatch(int totalCount) {
+    private void addBatchSingleThread(int totalCount) {
         System.out.println("Member Batch Start (Single Thread)");
         long methodStart = System.currentTimeMillis();
 
@@ -142,7 +153,7 @@ public class BookDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
-    public void deleteAllBooks() {
+    public void deleteAll() {
         System.out.println("Book Delete Start");
         long methodStart = System.currentTimeMillis();
 

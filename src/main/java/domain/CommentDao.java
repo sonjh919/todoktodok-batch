@@ -1,5 +1,7 @@
 package domain;
 
+import static domain.Setting.THRESHOLD;
+
 import database.ConnectMysql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +19,16 @@ public class CommentDao {
         this.connectMysql = connectMysql;
     }
 
-    public void addCommentBatchMultiThread(int totalCount, int threadCount, final int memberCount, final int discussionCount) {
+    public void addBatch(final int totalCount, final int threads, final int memberCount, final int discussionCount) {
+        if(totalCount <= THRESHOLD){
+            addBatchSingleThread(totalCount, memberCount, discussionCount);
+        }
+        else{
+            addBatchMultiThread(totalCount, threads, memberCount, discussionCount);
+        }
+    }
+
+    private void addBatchMultiThread(int totalCount, int threadCount, final int memberCount, final int discussionCount) {
         System.out.println("Comment Batch Start (Multi Thread)");
         long methodStart = System.currentTimeMillis();
 
@@ -77,7 +88,7 @@ public class CommentDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
-    public void addCommentBatch(int totalCount, final int memberCount, final int discussionCount) {
+    private void addBatchSingleThread(int totalCount, final int memberCount, final int discussionCount) {
         System.out.println("Comment Batch Start (Single Thread)");
         long methodStart = System.currentTimeMillis();
 
@@ -126,7 +137,7 @@ public class CommentDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
-    public void deleteAllComments() {
+    public void deleteAll() {
         System.out.println("Comment Delete Start");
         long methodStart = System.currentTimeMillis();
 

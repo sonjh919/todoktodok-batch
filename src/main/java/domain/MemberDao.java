@@ -1,5 +1,7 @@
 package domain;
 
+import static domain.Setting.THRESHOLD;
+
 import java.sql.Connection;
 
 import java.sql.PreparedStatement;
@@ -18,7 +20,16 @@ public class MemberDao {
         this.connectMysql = connectMysql;
     }
 
-    public void addMemberBatchMultiThread(int totalCount, int threadCount) {
+    public void addBatch(final int totalCount, final int threads) {
+        if(totalCount <= THRESHOLD){
+            addBatchSingleThread(totalCount);
+        }
+        else{
+            addBatchMultiThread(totalCount, threads);
+        }
+    }
+
+    private void addBatchMultiThread(int totalCount, int threadCount) {
         System.out.println("Member Batch Start (Multi Thread)");
         long methodStart = System.currentTimeMillis();
 
@@ -73,7 +84,7 @@ public class MemberDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
-    public void addMemberBatch(int totalCount) {
+    private void addBatchSingleThread(int totalCount) {
         System.out.println("Member Batch Start (Single Thread)");
         long methodStart = System.currentTimeMillis();
 
@@ -120,7 +131,7 @@ public class MemberDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
-    public void deleteAllMembers() {
+    public void deleteAll() {
         System.out.println("Member Delete Start");
         long methodStart = System.currentTimeMillis();
 
