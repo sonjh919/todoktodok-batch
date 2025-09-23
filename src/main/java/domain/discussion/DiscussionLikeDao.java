@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import util.RandomString;
 
 public class DiscussionLikeDao {
 
@@ -45,9 +46,10 @@ public class DiscussionLikeDao {
                              "INSERT INTO discussion_like (created_at, modified_at, deleted_at, discussion_id, member_id) VALUES (?, ?, NULL, ?, ?)")) {
 
                     connection.setAutoCommit(false);
-                    String time = String.valueOf(LocalDateTime.now());
 
                     for (int i = start; i < end; i++) {
+                        String time = String.valueOf(RandomString.generateRandomDateTime(LocalDateTime.now()));
+
                         long discussionId = (i % discussionCount) + 1;
                         long memberId = (i % memberCount) + 1;
 
@@ -99,9 +101,9 @@ public class DiscussionLikeDao {
 
             connection.setAutoCommit(false);
 
-            String time = String.valueOf(LocalDateTime.now());
-
             for (int i = 0; i < totalCount; i++) {
+                String time = String.valueOf(RandomString.generateRandomDateTime(LocalDateTime.now()));
+
                 long discussionId = (i % discussionCount) + 1;
                 long memberId = (i % memberCount) + 1;
 

@@ -10,6 +10,10 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import util.DiscussionContentGenerator;
+import util.RandomString;
+import util.SkewedDistribution;
+import util.TitleGenerator;
 
 public class DiscussionDao {
 
@@ -29,12 +33,16 @@ public class DiscussionDao {
     }
 
     private void addBatchMultiThread(int totalCount, int threadCount, final int memberCount,
-                                    final int bookCount) {
+                                     final int bookCount) {
         System.out.println("Discussion Batch Start (Multi Thread)");
         long methodStart = System.currentTimeMillis();
 
         int chunkSize = totalCount / threadCount;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+        TitleGenerator titleGenerator = new TitleGenerator();
+        SkewedDistribution distribution = new SkewedDistribution(memberCount, bookCount);
+        DiscussionContentGenerator contentGenerator = new DiscussionContentGenerator();
 
         for (int t = 0; t < threadCount; t++) {
             final int start = t * chunkSize;
@@ -43,17 +51,19 @@ public class DiscussionDao {
             executor.submit(() -> {
                 try (Connection connection = connectMysql.create();
                      PreparedStatement ps = connection.prepareStatement(
-                             "INSERT INTO discussion (created_at, modified_at, deleted_at, member_id, book_id, title, content) VALUES (?, ?, NULL, ?, ?, ?, ?)")) {
+                             "INSERT INTO discussion (created_at, modified_at, deleted_at, member_id, book_id, title, content) " +
+                                     "VALUES (?, ?, NULL, ?, ?, ?, ?)")) {
 
                     connection.setAutoCommit(false);
-                    String time = String.valueOf(LocalDateTime.now());
 
                     for (int i = start; i < end; i++) {
-                        // 예시용 member_id, book_id 생성 (실제 환경에 맞게 조정)
-                        long memberId = (i % memberCount) + 1; // 1~count 반복
-                        long bookId = (i % bookCount) + 1;    // 1~count 반복
-                        String title = "Discussion Title " + i;
-                        String content = "Discussion Content " + i;
+                        String time = String.valueOf(RandomString.generateRandomDateTime(LocalDateTime.now()));
+                        long memberId = distribution.skewedMemberId();
+                        long bookId = distribution.skewedBookId();
+
+                        String title = titleGenerator.makeTitle((long)i, 0.28);
+                        // 🔥 DiscussionContentGenerator 사용
+                        String content = contentGenerator.makeContent((long)i, 0.30); // 30% 확률 인기 콘텐츠 재사용
 
                         ps.setString(1, time);
                         ps.setString(2, time);
@@ -78,17 +88,16 @@ public class DiscussionDao {
 
         executor.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
-            executor.shutdownNow();
-            System.out.println("Discussion Batch End (Multi Thread)");
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
         long methodEnd = System.currentTimeMillis();
-        long elapsedSeconds = (methodEnd - methodStart) / 1000;
-        System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
+        System.out.println("Discussion Batch Complete: " + (methodEnd - methodStart) + "ms");
     }
+
+
 
     private void addBatchSingleThread(int totalCount, final int memberCount, final int bookCount) {
         System.out.println("Discussion Batch Start (Single Thread)");
@@ -105,12 +114,12 @@ public class DiscussionDao {
 
             connection.setAutoCommit(false);
 
-            String time = String.valueOf(LocalDateTime.now());
-
             for (int i = 0; i < totalCount; i++) {
+                String time = String.valueOf(RandomString.generateRandomDateTime(LocalDateTime.now()));
+
                 long memberId = (i % memberCount) + 1;
                 long bookId = (i % bookCount) + 1;
-                String title = "Discussion Title " + i;
+                String title = RandomString.generateRandomHangulWithSpace(30);
                 String content = "Discussion Content " + i;
 
                 preparedStatement.setString(1, time);

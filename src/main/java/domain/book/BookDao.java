@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import util.RandomString;
+import util.TitleGenerator;
 
 public class BookDao {
 
@@ -36,6 +38,9 @@ public class BookDao {
         int chunkSize = totalCount / threadCount;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 
+        // TitleGenerator 인스턴스 생성
+        TitleGenerator titleGenerator = new TitleGenerator();
+
         for (int t = 0; t < threadCount; t++) {
             final int start = t * chunkSize;
             final int end = (t == threadCount - 1) ? totalCount : start + chunkSize;
@@ -57,7 +62,9 @@ public class BookDao {
                         String image = "image" + i;
                         String publisher = "publisher" + i;
                         String summary = "summary" + i;
-                        String title = "title" + i;
+
+                        // 🔥 핵심 변경: TitleGenerator 사용
+                        String title = titleGenerator.makeTitle((long)i, 0.25); // 25% 확률로 인기 타이틀 재사용
 
                         ps.setString(1, time);
                         ps.setString(2, time);
@@ -84,8 +91,12 @@ public class BookDao {
         }
         executor.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
-            executor.shutdownNow();
+            if (!executor.awaitTermination(1, TimeUnit.MINUTES)) {
+                executor.shutdownNow(); // 1분 후에도 종료 안 되면 강제 중단
+                if (!executor.awaitTermination(1, TimeUnit.MINUTES)) {
+                    System.err.println("Executor did not terminate");
+                }
+            }
             System.out.println("Book Batch End (Multi Thread)");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -95,6 +106,7 @@ public class BookDao {
         long elapsedSeconds = (methodEnd - methodStart) / 1000;
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
+
 
     private void addBatchSingleThread(int totalCount) {
         System.out.println("Book Batch Start (Single Thread)");
@@ -119,7 +131,7 @@ public class BookDao {
                 String image = "image" + i;
                 String publisher = "publisher" + i;
                 String summary = "summary" + i;
-                String title = "title" + i;
+                String title = RandomString.generateRandomHangulWithSpace(30);
 
                 preparedStatement.setString(1, time);
                 preparedStatement.setString(2, time);

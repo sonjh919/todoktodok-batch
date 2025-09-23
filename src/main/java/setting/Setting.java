@@ -11,7 +11,7 @@ public class Setting {
     public static int TEN_THOUSAND = 10000; // 만
     public static int ONE_HUNDRED_THOUSAND = 100000; // 십만
     public static int ONE_MILLION = 1000000; // 백만: 10초 소요
-    public static int TEN_MILLION = 10000000; // 천만: 60초 소요 // 2개 이상의 테이블에 대해 설정하면 자원 부족으로 다 안들어감!!
+    public static int TEN_MILLION = 10000000; // 천만: 60초~5분 소요 // 2개 이상의 테이블에 대해 설정하면 자원 부족으로 다 안들어감!! // 왜 오래걸리는지 모르겠음.. 갑자기..
 
     /**
      * 각 테이블마다 몇 개의 데이터를 집어넣을 건지!
@@ -31,24 +31,24 @@ public class Setting {
      * commentReport, commentLike는 comment, member 데이터 필요
      * replyReport, replyLike는 report, member 데이터 필요
      */
-    public static int MEMBER_COUNT = TEN_THOUSAND;
-    public static int BLOCK_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * (MEMBER_COUNT-1)
-    public static int MEMBER_REPORT_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * (MEMBER_COUNT-1)
-    public static int REFRESH_TOKEN_COUNT = TEN_THOUSAND;
+    public static int MEMBER_COUNT = ONE_HUNDRED_THOUSAND;
+    public static int BLOCK_COUNT = ZERO; // 최댓값: MEMBER_COUNT * (MEMBER_COUNT-1)
+    public static int MEMBER_REPORT_COUNT = ZERO; // 최댓값: MEMBER_COUNT * (MEMBER_COUNT-1)
+    public static int REFRESH_TOKEN_COUNT = ZERO;
 
-    public static int BOOK_COUNT = TEN_THOUSAND;
+    public static int BOOK_COUNT = ONE_HUNDRED_THOUSAND;
 
-    public static int DISCUSSION_COUNT = TEN_THOUSAND;
-    public static int DISCUSSION_LIKE_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT (정책상)
-    public static int DISCUSSION_REPORT_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * DISCUSSION_COUNT (정책상, 본인이 쓴 글 고려 x)
+    public static int DISCUSSION_COUNT = ONE_HUNDRED_THOUSAND;
+    public static int DISCUSSION_LIKE_COUNT = ONE_HUNDRED_THOUSAND; // 최댓값: MEMBER_COUNT (정책상)
+    public static int DISCUSSION_REPORT_COUNT = ZERO; // 최댓값: MEMBER_COUNT * DISCUSSION_COUNT (정책상, 본인이 쓴 글 고려 x)
 
-    public static int COMMENT_COUNT = TEN_THOUSAND;
-    public static int COMMENT_LIKE_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT (정책상)
-    public static int COMMENT_REPORT_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * COMMENT_COUNT (정책상, 본인이 쓴 글 고려 x)
+    public static int COMMENT_COUNT = ONE_HUNDRED_THOUSAND;
+    public static int COMMENT_LIKE_COUNT = ZERO; // 최댓값: MEMBER_COUNT (정책상)
+    public static int COMMENT_REPORT_COUNT = ZERO; // 최댓값: MEMBER_COUNT * COMMENT_COUNT (정책상, 본인이 쓴 글 고려 x)
 
-    public static int REPLY_COUNT = TEN_THOUSAND;
-    public static int REPLY_LIKE_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT (정책상)
-    public static int REPLY_REPORT_COUNT = TEN_THOUSAND; // 최댓값: MEMBER_COUNT * REPLY_COUNT (정책상, 본인이 쓴 글 고려 x)
+    public static int REPLY_COUNT = ONE_HUNDRED_THOUSAND;
+    public static int REPLY_LIKE_COUNT = ZERO; // 최댓값: MEMBER_COUNT (정책상)
+    public static int REPLY_REPORT_COUNT = ZERO; // 최댓값: MEMBER_COUNT * REPLY_COUNT (정책상, 본인이 쓴 글 고려 x)
 
     /**
      * 현재 테이블에 있는 데이터 수!! 값을 골고루 넣어주기 위함 + 제대로 안적으면 에러남!! 까먹지 막고 꼭 쓰기!!
@@ -83,10 +83,10 @@ public class Setting {
      * mysql 연결 세팅
      */
     public static final String SERVER = "localhost:3306"; // MySQL 서버 주소
-    public static final String DATABASE = "todoktodok_test"; // MySQL DATABASE 이름
+    public static final String DATABASE = "todoktodok_test2"; // MySQL DATABASE 이름
     public static final String OPTION = "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"; // 옵션 (안건드는게좋음)
     public static final String USERNAME = "root"; //  MySQL 서버 아이디
-    public static final String PASSWORD = "root"; // MySQL 서버 비밀번호
+    public static final String PASSWORD = "kansiro0314"; // MySQL 서버 비밀번호
 
     /**
      * 잘 들어갔는지 확인!

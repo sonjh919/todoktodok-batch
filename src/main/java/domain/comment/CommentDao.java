@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import util.CommentGenerator;
+import util.RandomString;
 
 public class CommentDao {
 
@@ -35,6 +37,9 @@ public class CommentDao {
         int chunkSize = totalCount / threadCount;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 
+        // CommentGenerator 인스턴스 생성
+        CommentGenerator commentGenerator = new CommentGenerator();
+
         for (int t = 0; t < threadCount; t++) {
             final int start = t * chunkSize;
             final int end = (t == threadCount - 1) ? totalCount : start + chunkSize;
@@ -48,12 +53,15 @@ public class CommentDao {
                      PreparedStatement ps = connection.prepareStatement(query)) {
 
                     connection.setAutoCommit(false);
-                    String time = String.valueOf(LocalDateTime.now());
 
                     for (int i = start; i < end; i++) {
+                        String time = String.valueOf(RandomString.generateRandomDateTime(LocalDateTime.now()));
+
                         long discussionId = (i % discussionCount) + 1;
                         long memberId = (i % memberCount) + 1;
-                        String content = "Comment Content " + i;
+
+                        // 🔥 CommentGenerator 사용
+                        String content = commentGenerator.makeComment((long)i, 0.20); // 20% 확률로 인기 댓글 재사용
 
                         ps.setString(1, time);
                         ps.setString(2, time);
@@ -89,6 +97,7 @@ public class CommentDao {
         System.out.println("Total method elapsed time: " + elapsedSeconds + " seconds\n");
     }
 
+
     private void addBatchSingleThread(int totalCount, final int memberCount, final int discussionCount) {
         System.out.println("Comment Batch Start (Single Thread)");
         long methodStart = System.currentTimeMillis();
@@ -104,9 +113,9 @@ public class CommentDao {
 
             connection.setAutoCommit(false);
 
-            String time = String.valueOf(LocalDateTime.now());
-
             for (int i = 0; i < totalCount; i++) {
+                String time = String.valueOf(RandomString.generateRandomDateTime(LocalDateTime.now()));
+
                 long discussionId = (i % discussionCount) + 1;
                 long memberId = (i % memberCount) + 1;
                 String content = "Comment Content " + i;

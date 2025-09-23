@@ -19,5 +19,4 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
      */
     boolean existsByToken(final String refreshToken);
 }
-
 ```
